@@ -1,0 +1,43 @@
+{
+
+    "manifest_version": 2,
+    "name": "ProgChat",
+    "version": "1.0.0.0",
+	"author": "Luis Araujo",
+
+    "description": "This is a plugin for adding a context-sensitive feature to Blackboard Collaborate Chat on programming.",
+
+
+    "icons": {
+       "48": "icon48.png",
+       "128": "icon128.png"
+    },
+
+
+    "page_action": {
+        "default_icon": {
+            "19" : "icon19.png"
+        },
+        "default_title": "ProgChat"
+    },
+
+
+    "permissions": [
+        "declarativeContent"
+    ],
+
+
+    "background": {
+        "scripts": ["background.js"],
+        "persistent": false
+    },
+
+
+    "content_scripts": [ {
+		"css": ["inject/default.min.css"],
+        "js": [ "inject/jquery.js", "inject/script.js", "inject/highlight.min.js", "inject/FileSaver.js" ],
+        "matches": [ "https://ca.bbcollab.com/collab/ui/session/*" ]
+    } ]
+
+
+}
