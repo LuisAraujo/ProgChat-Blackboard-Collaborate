@@ -1,0 +1,36 @@
+PASTA GDRIVE:
+
+https://drive.google.com/drive/folders/1c0UkhpKImub18Z_Ebfc-JKtVyZp0ql_z?usp=sharing
+
+Olá pessoal, peço a ajuda de vocês no testes desta Extensão que estou desenvolvendo. O objetivo da extensão é possibilitar a formatação, destaque e download de códigos no Blackboard Collaborate.
+
+Passos para instalação: ⚙️
+
+1 - Baixe o arquivo "ProgChat-Blackboard-Collaborate.zip";
+
+2 - Descompate o arquivo;
+
+3 - Abra o Google Chrome;
+
+4 - Digite a url: chrome://extensions/
+
+5 - Ative o modo desenvolvedor (lado direito);
+
+6 - Clique na opção "Carregar sem Compactação"; 	
+
+7 - Selecione a pasta "ProgChat-Blackboard-Collaborate", descompactada.
+
+
+Passos para testes: 👨🏽‍💻👩🏽‍💻
+
+1 - Solicite a mim o link da webconferência, quando a Extensão estiver instalada; 
+
+2 - Para enviar códigos formatados é necessário colocar a  palavras //code, antes do código. 
+
+2.1 - Exemplo:
+	//code
+	int main(){
+		printf("teste");
+	}
+	
+3 - Após isso, lhe enviarei um questionário para avaliação.
