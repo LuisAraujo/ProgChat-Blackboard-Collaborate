@@ -1,6 +1,8 @@
 seek = 0;
-n_error = 0;
-n_codes = 0;
+//number error of today content
+n_error = 1;
+//number error of today content
+n_codes = 10;
 
 //cont to contents
 const ATT = 1;
@@ -11,7 +13,7 @@ const WHI = 5;
 const FUN = 6;
 const MAIN = 7;
 
-
+//flags to found content in code
 var att_found = 0;
 var dec_found = 0;
 var if_found = 0;
@@ -20,6 +22,7 @@ var for_found = 0;
 var fun_found = 0;
 var main_found = 0;
 
+//REGEX
 const  regexatribut = /(int|float|char|double).*\=.*;/gm;
 //const  regexdeclar =  /(int|float|char|double)\s\[A-Za-z]\;/gm;
 const  regexdeclar =  /(int|float|char|double)\s[A-Za-z_].*\;/gm;
@@ -32,24 +35,60 @@ const  regexwhile2 = /(while).*/gm;
 const  regexfunction =  /(int|float|char|double)\s.*\(.*\).*/gm;
 const  regexmain =  /(int|float|char|double).*\main.*\(.*\).*/gm;
 
-console.log( regexdeclar.exec("int b;") )
-		
+var currentContent = null;
+var currentLang = null;
+
 		
 $(document).ready(function(){
+	
+	currentContent = getContentToDay();
+	currentLang = getLanguageCourse();
+	
+	getCompilation();
+	
+	console.log(getListItems());
+	console.log(n_codes, n_error);
 	console.log("ProgChat Blackboard Collab Started");
+	
+	setInterval(main, 1000);
+	
+	
+	$("#textarea-sender").on('keypress',function(e) {
+		if(e.which == 13) {
+			var msg = $("#textarea-sender").val();
+			$("#textarea-sender").val("");
+			
+			msg= msg.replace(/\>/g,'&gt;');
+			msg= msg.replace(/\</g,'&lt;');
+			
+			
+			var html = "<div class='msg'><div class='perfil'><span class='foto'></span></div><div class='content-chat'><div class='name'>Usuario</div><div class='chat-message__body'>";
+			
+			html += msg;
+
+			html +="</div></div></div>";
+		
+			$("#container-mgs").append( html );
+			
+			$("#container-mgs").animate({scrollTop: $("#container-mgs").prop("scrollHeight")});
+		}
+	});
 });
 
-setInterval( function(){
+
+
+function main(){
 	
 	var checkmsg = document.getElementById("msg"+(seek-1));
 	
-	//restart chat
+	//restarted chat
 	if((checkmsg == undefined) || (checkmsg == null) || (checkmsg == "")){
 		seek = 0;
 	}
 	
 	
 	var msg = document.getElementsByClassName("chat-message__body");
+	
 	//console.log( "cheking "+ msg.length);
 	for(i = seek; i< msg.length; i++){
 		var text = msg[i].innerText;
@@ -57,23 +96,26 @@ setInterval( function(){
 		
 		if( text.includes("//code") ){
 			
-				console.log(text);
+				//console.log(text);
 				
+				//eval code
 				evalCode(text, msg[i].id );
-				
+				//get trip of contents
 			    text = getTrip( text );
 				
+				//replace < and > 
 				text= text.replace(/\>/g,'&gt;');
 				text= text.replace(/\</g,'&lt;');
 				
+				//remove "acentos"
 				text = removerAcentos(text);
+				//encode to UTF-8
 				text = decodeURIComponent(escape(text));
 				
 				//text = decodeURIComponent(unescape( unescape(text)));
+				var chtml = "<pre><code class='"+currentLang.name+"' id='cod"+i+"'>"+text+"</code></pre>";
 				
-				var chtml = "<pre><code class='c' id='cod"+i+"'>"+text+"</code></pre>";
-				
-				chtml += "<span id='dowcod"+i+"' ref='cod"+i+"' style='color:#22f; text-decoration: underline'> Download </span>";
+				chtml += "<span class='downcode' id='dowcod"+i+"' ref='cod"+i+"' > <span class='down' ></span> Download </span>";
 				msg[i].innerHTML= chtml;
 
 				hljs.highlightBlock(document.getElementById("cod"+i));
@@ -82,38 +124,41 @@ setInterval( function(){
 					var text = $( "#" + $(this).attr("ref") ).text()
 					console.log( text );
 					var blob = new Blob([text], {type: "text/plain"});
-					saveAs(blob, "arquivo.c");
+					saveAs(blob, "arquivo."+currentLang.extension);
 						
 				});
 			
 		}
 		seek++;
 	}
-}, 1000);
+}
 
 function getTrip(text){
 	
 	textarr = text.split('\n');
 	textreturn = new Array();
 	let j = 0;
+	//console.log( getLevelStudent());
+	
 	for(let i = 0; i < textarr.length; i++){
 		
 		
 		//FOR CORRETO
 		if( regexfor.exec(textarr[i]) != null){
-			if( (getContentToDay() == FOR) || (getLevelStudent() < 5)){
+			if( (currentContent== FOR) || (getLevelStudent(FOR) > 50)){
 				if(for_found)
 				textreturn[j++] = "//Esta e uma declaracao de loop FOR";	
 				else
-					textreturn[j++] = "/*\nEsta e uma declaracao de loop FOR \nUm loop repete a execucao de mum trecho de codigo.\nA sintaxe dele e: \nfor( atribuicao inical; condicao para ele continuar executando; acao relizada a cada interacao) \nApos isso todo o codigo dentro do corpo,defindo { }.\nVeja um exemplos: \nfor(i = 0; i < 10; i++){ \n   printf('indice = \%d');\n }\n*/";
+					textreturn[j++] = "/*\nEsta e uma declaracao de loop FOR \nUm loop repete a execucao de um trecho de codigo.\nA sintaxe dele e: \nfor( atribuicao inical; condicao para ele continuar executando; acao relizada a cada interacao) \nApos isso todo o codigo dentro do corpo, defindo por { }, e repetido.\nVeja um exemplos: \nfor(i = 0; i < 10; i++){ \n   printf('indice = \%d');\n }\n*/";
 					
 				for_found = 1;	
 			}
 		
 		//FOR ERRO
 		}else if( regexfor2.exec(textarr[i]) != null){
-			if((getContentToDay() == FOR) || (getLevelStudent() < 5))
-				textreturn[j] = "/*\nIdentificamos que talvez voce queira criar um FOR. \n";
+			
+			textreturn[j] = "/*\nIdentificamos que talvez voce queira criar um FOR. \n";
+			
 			if(for_found)
 				textreturn[j++] += "Reveja o seu codigo ou, se necessitar, use a dica no for anterior\n*/";
 			else
@@ -122,7 +167,7 @@ function getTrip(text){
 		
 		}else if( regexatribut.exec(textarr[i]) != null){
 			
-			if((getContentToDay() == ATT) || (getLevelStudent() < 5)){
+			if((currentContent == ATT) || (getLevelStudent(ATT) > 50)){
 				
 				if(att_found)
 					textreturn[j++] = "/*\nEsta e uma ATRIBUICAO*/";	
@@ -134,7 +179,7 @@ function getTrip(text){
 			
 			}
 		}else if( regexdeclar.exec(textarr[i]) != null){
-			if((getContentToDay() == DEC) || (getLevelStudent() < 5))
+			if((currentContent== DEC) || (getLevelStudent(DEC) > 50))
 				if(dec_found)
 					textreturn[j++] = "/*\nEsta e uma DECLARACAO\n*/";	
 				else
@@ -143,7 +188,7 @@ function getTrip(text){
 			dec_found = 1;
 			
 		}else if( regexif.exec(textarr[i]) != null){
-			if((getContentToDay() == IF) || (getLevelStudent() < 5)){
+			if((currentContent == IF) || (getLevelStudent(IF) > 50)){
 				if(if_found)
 					textreturn[j++] = "/*\nEsta e uma CONDICIONAL IF \n*/";	
 				else
@@ -153,28 +198,27 @@ function getTrip(text){
 			}
 		
 		}else if( regexif2.exec(textarr[i]) != null){
-			if((getContentToDay() == IF) || (getLevelStudent() < 5)){
 				
-				textreturn[j] = "/*\nIdentificamos que talvez voce queira criar um IF. \n";
+			textreturn[j] = "/*\nIdentificamos que talvez voce queira criar um IF. \n";
+			
+			if(if_found)
+				textreturn[j++] += "Reveja o seu codigo ou, se necessitar, use a dica no if anterior\n*/";
+			else
+				textreturn[j++] += "Condicionais permitem mudar o fluxo do codigo de acordo com alguma avaliacao/condicao.\nA sintaxe dela e:\nif( condicao ).\nApos isso, todo o codigo dentro do corpo, definido por { } \nVeja um exemplo: \nif(i>100){\n   print('valor menor que 100');\n}\n*/";
 				
-				if(if_found)
-					textreturn[j++] += "Reveja o seu codigo ou, se necessitar, use a dica no if anterior\n*/";
-				else
-					textreturn[j++] += "Condicionais permitem mudar o fluxo do codigo de acordo com alguma avaliacao/condicao.\nA sintaxe dela e:\nif( condicao ).\nApos isso, todo o codigo dentro do corpo, definido por { } \nVeja um exemplo: \nif(i>100){\n   print('valor menor que 100');\n}\n*/";
 				
-				
-			}
+			
 		
 		}else if( regexmain.exec(textarr[i]) != null){
 			
-			if((getContentToDay() == MAIN) || (getLevelStudent() < 5))
+			if((currentContent== MAIN) || (getLevelStudent(MAIN) > 50))
 				if(!main_found)
 					textreturn[j++] = "/*\nEsta e a FUNCAO MAIN.\nEsta e a funcao  principal do seu codigo. \n*/";	
 				
 				main_found = 1;
 		
 		}else if( regexfunction.exec(textarr[i]) != null){
-			if((getContentToDay() == FUN) || (getLevelStudent() < 5))
+			if((currentContent == FUN) || (getLevelStudent(FUN) > 50))
 				if(fun_found)
 					textreturn[j++] = "// *** Esta e uma FUNCAO *** ";	
 				else
@@ -183,7 +227,7 @@ function getTrip(text){
 				fun_found = 1;
 		
 		}else if( regexwhile.exec(textarr[i]) != null){
-			if((getContentToDay() == WHI) || (getLevelStudent() < 5))
+			if((currentContent == WHI) || (getLevelStudent(WHI) > 50))
 				if(fun_found)
 					textreturn[j++] = "//Esta e um declaracao de loop WHILE";	
 				else
@@ -192,9 +236,9 @@ function getTrip(text){
 				fun_found = 1;
 		
 		}else if( regexwhile2.exec(textarr[i]) != null){
-			if((getContentToDay() == WHI) || (getLevelStudent() < 5))
-				textreturn[j] = "/*\nIdentificamos que talvez voce queira criar um WHILE.\n"
 			
+			textreturn[j] = "/*\nIdentificamos que talvez voce queira criar um WHILE.\n"
+		
 			if(whi_found)
 				textreturn[j++] += "Reveja o seu codigo ou, se necessitar, use a dica no while anterior\n*";			
 			else
@@ -208,39 +252,138 @@ function getTrip(text){
 		
 		
 	}	
-
+	
+	textreturn[ textreturn.length ] = "//Data: " + getCurrentDate()+ "- " + getContentName ( currentContent );
+	
 	var textret = "";
 	for(let i = 0; i < textreturn.length; i++){
 		textret += textreturn[i] + "\n";
 	}
+	
 	return textret;
 }
 
 function getContentToDay(){
-	return FOR;
+	var datecur = getCurrentDate();
+	//make request
+	var data = '{"date": "00/00/000", "content":"if"}';
+	var json = JSON.parse(data);
+	var content = 0;
+	
+	if(json.content == "if"){
+		content = IF;
+	}if(json.content == "for"){
+		content = FOR;
+	}else if(json.content == "att"){
+		content = ATT;
+	}else if(json.content == "dec"){
+		content = DEC;
+	}else if(json.content == "whi"){
+		content = WHI;
+	}else if(json.content == "fun"){
+		content = FUN;
+	}else if(json.content == "main"){
+		content = MAIN;
+	}
+
+	return content; 
+}
+/*
+* @name GetLanguageCourse
+* @desc Get the language used in a course, e.g., C, Python, Java
+*/
+function getLanguageCourse(){
+	var data = '{"course": "Algoritmo", "lang":"c", "extension":"c"}';
+	var json = JSON.parse(data);
+	
+	return json;
+}
+/*
+* @name GetCurrentDate
+* @desc Get the current date in format: dd/mm/yyyy
+*/
+function getCurrentDate(){
+    var data = new Date(),
+        dia  = data.getDate().toString(),
+        diaF = (dia.length == 1) ? '0'+dia : dia,
+        mes  = (data.getMonth()+1).toString(), //+1 pois no getMonth Janeiro começa com zero.
+        mesF = (mes.length == 1) ? '0'+mes : mes,
+        anoF = data.getFullYear();
+    return diaF+"/"+mesF+"/"+anoF;
 }
 
-function getLevelStudent(){
-	return  10 - (n_error * 10 / n_codes);
+function getLevelStudent(content){
+	if((content == undefined) || (content == null))
+		content = currentContent;
+	
+	var arr_code = getCompilationOtherContents(content);
+	var percent = (arr_code[1] * 100 / arr_code[0]);
+	console.log(content + " " +percent + "%");
+	
+	return  percent;
+}
+
+/*
+* @name setCompilation
+* @desc Add the genral compilation and error compilation numbers.
+*/
+function setCompilation(error){
+	currentContent;
+	n_codes++;
+	if(error)
+		n_error++;
+	
+	saveCompilation();
+}
+
+function saveCompilation(){
+	saveItem(currentContent, n_codes + "|" + n_error);
+}
+
+function getCompilation(){
+	
+	var ncodes = getItem(currentContent);
+	console.log(ncodes);
+	if(ncodes!=null){
+		var arr_ncodes = ncodes.split("|");
+		n_codes = parseInt( arr_ncodes[0] );
+		n_error = parseInt( arr_ncodes[1] );
+	}
+}
+
+
+function getCompilationOtherContents(content){
+	
+	var ncodes = getItem(content);
+
+	if(ncodes!=null){
+		var arr_ncodes = ncodes.split("|");
+		var n_codes = parseInt( arr_ncodes[0] );
+		var n_error = parseInt( arr_ncodes[1] );
+	}
+	
+	return [n_codes, n_error];
 }
 
 function evalCode(text, idcode){
-	n_codes++;
+	
 	
 	$.ajax({
+        url: "http://192.168.0.102/API-ExecuteCode/api.php",
         url: "http://localhost/API-ExecuteCode/api.php",
         type: 'POST',
         data: {code: text},
         //data: {code: "teste"},
         success: function(data) {
 			json = JSON.parse(data);
-			if(json.status == "noerror")
+			if(json.status == "noerror"){
 				$("#" + idcode).append("<span style=color:#090>  &#10004; Correto!</span>");
-			else if(json.status == "error"){
+				setCompilation(0);
+			}else if(json.status == "error"){
 				$("#" + idcode).append("<span style=color:#900>  &#10006; Erro!</span>");
-				n_error++;
+				setCompilation(1);
 			}
-			console.log(data);		
+			//console.log(data);		
         },
 		
 		error: function(data){
@@ -248,6 +391,27 @@ function evalCode(text, idcode){
 		}
         
     });
+	
+}
+
+
+function getContentName(content){
+	
+	if(content == DEC)
+		return "declaracao de varaveis";
+	else if(content == ATT)
+		return "atribucao de valores";
+	else if(content == IF)
+		return "condicionais if";
+	else if(content == FOR)
+		return "loops com for";
+	else if(content == WHI)
+		return "loops com while";
+	else if(content == FUN)
+		return "funcoes";
+	else if(content == MAIN)
+		return "funcao main";
+	
 	
 }
 function removerAcentos(str) {

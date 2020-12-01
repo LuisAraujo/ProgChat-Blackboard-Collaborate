@@ -1,28 +1,235 @@
 <html>
 <head>
  <link rel="stylesheet" href="inject/default.min.css">
+ <style>
+	body{
+		padding: 0px;
+		margin: 0px;
+	}
+	
+	#screen{
+		position: fixed;
+		top; 0%;
+		width: calc(100% - 610px);
+		height: 100%;
+		background-image: url("imgs/screen.png");
+		background-size: cover;
+		float:left;
+	}
+	
+	#head-chat{
+		padding-top: 10px;
+		width: 100%;
+		border-bottom: 1px solid #aaa;
+		font-size: 20px;
+		font-weight: bold;
+		
+	}
+	#container-chat{
+		font-family: "Arial";
+		width: 600px;
+		position: fixed;
+		right: 0px;
+		border: 1px solid #000;
+		height: 100%;
+		padding: 5px;
+	}
+	#container-mgs{
+		width: 100%;
+		height: 70%;
+		padding: 5px;
+		overflow-y: scroll;
+	}
+	
+	.chat-message__body{
+		white-space: pre-line;
+	}
+	
+	
+	.perfil{
+		width: 10%;
+		float:left;
+		height: 50px;
+	}
+	
+	.content-chat{
+		width: 100%;		
+		
+	}
+	
+	.content-chat .name{
+		font-weight: bold;
+	}
+	
+	.foto{
+		width: 50px;
+		height: 50px;
+		display: block;
+		background-color: #aaa;
+		border-radius: 50%;
+		background-image: url("imgs/user.png");
+		
+	}
+	
+	.down{
+		background-image: url("imgs/down.png");
+		background-size: 100%; 
+		height: 15px;
+		width: 15px;
+		display: block;
+		float:left;
+		margin-right: 5px;
+	}
+	.downcode{
+		font-weight: bold;
+	}
+	.downcode:hover{
+		cursor: pointer;
+	}
+
+	#container-input textarea{
+		width: 100%;
+		height: 100px;
+		border: none;
+		resize: none;
+		color: #000;
+	}
+	
+	#container-chat-sender{
+		border: 1px solid #aaa;
+		width: calc( 100% - 5px);
+		height: 30%;
+		 
+	}
+	
+	#container-input{
+		width: calc( 100% - 30px);
+		padding-top: 10px;
+		padding: 5px;
+		margin-top: 10px;
+		margin-left: 10px;
+		border: 1px solid #aaa;
+	}
+	
+	.msg{
+		width	 100%;
+		min-height: 300px;
+		display: block;
+		margin-top: 10px;
+		padding-top: 10px;
+		border-top: 1px solid #aaa;
+	}
+ 
+ </style>
 </head>
 <body>
 
-<div>
+<div id="screen"></div>
 
- <div class="chat-message__body">
- <pre>//code
 
- int main(){
-	int a = 10;
-	int b
-	if(a &lt b){
-		printf("teste");
-	}
-	return 0;
- }</pre>
- </div>
- 
- 
+<div id="container-chat">
+	<div id="head-chat">
+	Todos
+	</div>
+	<div id="container-mgs">
+		
+		<div class="msg">
+			<div class="perfil">
+				<span class="foto">
+				
+				</span>
+			</div>
+			<div class="content-chat">
+				<div class="name">
+					Usuario
+				</div>
+			
+				<div class="chat-message__body">
+				//code
+
+				#include &ltstdio.h&gt
+				int main(){
+				int a = 0;
+				if(a == 10){
+					printf("%d", a);
+				}
+				return 0;
+				}
+
+				</div>
+			</div>
+		</div>
+		
+		
+		<div class="msg">
+			<div class="perfil">
+				<span class="foto">
+				
+				</span>
+			</div>
+			<div class="content-chat">
+				<div class="name">
+					Usuario
+				</div>
+			
+				<div class="chat-message__body">
+				//code
+
+				#include &ltstdio.h&gt
+				int main(){
+				int a = 0;
+				if(a == 10){
+					printf("%d", a);
+				}
+				return 0;
+				}
+
+				</div>
+			</div>
+		</div>
+		
+		 <div class="msg">
+			<div class="perfil">
+				<span class="foto">
+				
+				</span>
+			</div>
+			<div class="content-chat">
+				<div class="name">
+					Usuario
+				</div>
+			
+				<div class="chat-message__body">
+				//code
+
+				#include &ltstdio.h&gt
+				int main(){
+				int a = 0;
+				if(a == 10){
+					printf("%d", a);
+				}
+				return 0;
+				}
+
+				</div>
+			</div>
+		</div>
+		
+	</div>
+	
+	<div id="container-chat-sender">
+		
+		<div id="container-input">
+			<textarea id="textarea-sender" placeholder="Diga algo"></textarea>
+		</div>
+	
+	</div>
+	
 </div>
 
 <script src="inject/jquery.js" ></script>
+<script src="inject/FileSaver.js" ></script>
+<script src="inject/localstorage.js" ></script>
 <script src="inject/highlight.min.js" ></script>
 <script src="inject/script.js" >
 
