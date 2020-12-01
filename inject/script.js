@@ -54,7 +54,7 @@ $(document).ready(function(){
 	
 	
 	$("#textarea-sender").on('keypress',function(e) {
-		if(e.which == 13) {
+		if((e.which == 13)&& (!e.shiftKey))  {
 			var msg = $("#textarea-sender").val();
 			$("#textarea-sender").val("");
 			
@@ -64,7 +64,7 @@ $(document).ready(function(){
 			
 			var html = "<div class='msg'><div class='perfil'><span class='foto'></span></div><div class='content-chat'><div class='name'>Usuario</div><div class='chat-message__body'>";
 			
-			html += msg;
+			html += "<pre>"+msg+"</pre>";
 
 			html +="</div></div></div>";
 		
@@ -73,6 +73,24 @@ $(document).ready(function(){
 			$("#container-mgs").animate({scrollTop: $("#container-mgs").prop("scrollHeight")});
 		}
 	});
+	
+	
+	$("#textarea-sender").on('keydown', function(e) {
+		if (e.key == 'Tab') {
+			e.preventDefault();
+			var start = this.selectionStart;
+			var end = this.selectionEnd;
+
+			// set textarea value to: text before caret + tab + text after caret
+			$(this).val(  $(this).val().substring(0, start) +
+			  "\t" + this.value.substring(end) );
+
+			// put caret at right position again
+			this.selectionStart =
+			  this.selectionEnd = start + 1;
+		}
+	});
+
 });
 
 
